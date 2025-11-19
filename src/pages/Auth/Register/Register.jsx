@@ -1,6 +1,8 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import useAuth from "../../../hooks/useAuth";
+import { Link } from "react-router";
+import SocialLogin from "../SocialLogin/SocialLogin";
 
 const Register = () => {
   const { register, handleSubmit,formState:{errors} } = useForm();
@@ -16,8 +18,8 @@ const Register = () => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit(handleRegistration)}>
+    <div className="card bg-base-100 w-full mx-auto max-w-sm shrink-0 shadow-2xl">
+      <form className="card-body" onSubmit={handleSubmit(handleRegistration)}>
         <fieldset className="fieldset">
           {/* name field */}
           {/* <label className="label">Name</label>
@@ -74,7 +76,9 @@ const Register = () => {
           </div>
           <button className="btn btn-neutral mt-4">Register</button>
         </fieldset>
+               <p>Already have an account? <Link className="text-blue-500 underline" to = "/login">Login</Link> </p>
       </form>
+      <SocialLogin></SocialLogin>
     </div>
   );
 };

@@ -1,29 +1,62 @@
-import React from 'react';
-import { AuthContext } from './AuthContext/AuthContext';
-import { createUserWithEmailAndPassword } from 'firebase/auth/cordova';
-import { auth } from '../firebase/firebase.init';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import React, { useEffect, useState } from "react";
+import { AuthContext } from "./AuthContext/AuthContext";
+import { createUserWithEmailAndPassword } from "firebase/auth/cordova";
+import { auth } from "../firebase/firebase.init";
+import {
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
 
-const AuthProvider = ({children}) => {
+const googleProvider = new GoogleAuthProvider();
 
-    const registerUser = (email,password) =>{
-        return createUserWithEmailAndPassword(auth,email,password)
-    }
+const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    const signInUser = (email,password) =>{
-        return signInWithEmailAndPassword(auth,email,password) 
-    }
+  const registerUser = (email, password) => {
+    setLoading(true);
+    return createUserWithEmailAndPassword(auth, email, password);
+  };
 
-const authInfo = {
-registerUser,
-signInUser,
-}
+  const signInUser = (email, password) => {
+    setLoading(true);
+    return signInWithEmailAndPassword(auth, email, password);
+  };
 
-    return (
-        <AuthContext value={authInfo}>
-            {children}
-        </AuthContext>
-    );
+  const signInGoogle = () => {
+    setLoading(true);
+    return signInWithPopup(auth, googleProvider);
+  };
+
+  const logOut = () => {
+    setLoading(true);
+    return signOut();
+  };
+
+  // observe user state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  const authInfo = {
+    user,
+    loading,
+    registerUser,
+    signInUser,
+    signInGoogle,
+    logOut,
+  };
+
+  return <AuthContext value={authInfo}>{children}</AuthContext>;
 };
 
 export default AuthProvider;
