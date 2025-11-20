@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext/AuthContext";
-import { createUserWithEmailAndPassword } from "firebase/auth/cordova";
+// import { createUserWithEmailAndPassword } from "firebase/auth/cordova";
 import { auth } from "../firebase/firebase.init";
 import {
+  createUserWithEmailAndPassword,
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
+  updateProfile,
 } from "firebase/auth";
 
 const googleProvider = new GoogleAuthProvider();
@@ -33,7 +35,11 @@ const AuthProvider = ({ children }) => {
 
   const logOut = () => {
     setLoading(true);
-    return signOut();
+    return signOut(auth);
+  };
+
+  const updateUserProfile = (profile) => {
+    return updateProfile(auth.currentUser,profile);
   };
 
   // observe user state
@@ -54,6 +60,7 @@ const AuthProvider = ({ children }) => {
     signInUser,
     signInGoogle,
     logOut,
+    updateUserProfile,
   };
 
   return <AuthContext value={authInfo}>{children}</AuthContext>;
